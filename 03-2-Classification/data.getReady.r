@@ -1,7 +1,7 @@
 needs(readr, dplyr, zoo, forecast)
-sentiment.raw <- read_csv("E:/RScript/4335_Final/03-2-Classification/sentiment_scores.csv", 
+sentiment.raw <- read_csv("./03-2-Classification/sentiment_scores.csv", 
                              col_types = cols(date = col_date(format = "%Y-%m-%d")))
-cornPrice.raw <- read_csv("E:/RScript/4335_Final/03-2-Classification/corn_price.csv", 
+cornPrice.raw <- read_csv("./03-2-Classification/corn_price.csv", 
                        col_types = cols(date = col_date(format = "%m/%d/%Y"))) 
 
 a = full_join(cornPrice.raw, sentiment.raw, by = "date") %>%
