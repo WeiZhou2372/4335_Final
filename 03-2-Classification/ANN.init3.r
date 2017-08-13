@@ -2,7 +2,7 @@ data = source("./03-2-Classification/data.getReady2.r", local = T)$value
 # deepnet -------------------------------
 if(!TRUE){
 needs(deepnet)
-dim(data) #982 52
+dim(data) #2088 74
 data.wor = data %>%
   mutate(date = as.numeric(date))
   #select(-date)
@@ -17,13 +17,23 @@ nn.test(model, test.data %>% select(-y) %>% as.matrix(),test.data$y)
 prediction = nn.predict(model, test.data %>% select(-y) %>% as.matrix())
 #prediction
 }
+if(!TRUE){
+  needs(nnet)
+  data.wor = data %>%
+    select(-date)
+  train.data = data.wor[10:400,] 
+  test.data = data.wor[401:410,]
+  
+  model = nnet(y~., data = train.data, size = 10)
+  
+}
 
 if(TRUE){
   needs(deepnet)
   # config ==================
-  cacheSize = 504
-  startRow = 1001
-  endRow = 1600
+  cacheSize = 300
+  startRow = 1942
+  endRow = 2000
   
   notebook = data %>%
     select(date, settle, score, y) %>%
@@ -38,7 +48,7 @@ if(TRUE){
     test.data = data.wor[i + 1,]
     
     model = dbn.dnn.train(train.data %>% select(-y) %>% as.matrix(), train.data$y,
-                          hidden = c(10,10), numepochs = 20, batchsize = 20)
+                          hidden = c(10,10,10), numepochs = 30, batchsize = 20)
     
     prediction = nn.predict(model, test.data %>% select(-y) %>% as.matrix()) %>% 
       as.numeric() %>%
@@ -53,16 +63,7 @@ if(TRUE){
   }
   
   notebook = notebook[startRow:endRow,]
+  beepr::beep()
 }
-
+sum(notebook$y == notebook$y.predict) / nrow(notebook)
 # nnet --------------------------------
-if(!TRUE){
-  needs(nnet)
-  data.wor = data %>%
-    select(-date)
-  train.data = data.wor[10:400,] 
-  test.data = data.wor[401:410,]
-  
-  model = nnet(y~., data = train.data, size = 10)
-  
-}

@@ -25,6 +25,18 @@ df.matrix = function(x, naming = "p", start = 1, end = 120, by = 5){
   xx[,-1]
 }
 
+move.matrix = function(x, naming = "p", start = 1, end = 120, by = 5){
+  xx = data_frame(origin = x)
+  
+  for(ii in seq(start, end, by = by)){
+    column.name = paste0(naming, ".", ii)
+    xx = xx %>%
+      mutate(!!column.name := lag(x, ii))
+  }
+  message(paste("Expanded", ncol(xx) - 1, "columns from", start, "to", end, "by", by))
+  xx[,-1]
+}
+
 y.matrix = function(y){
   #input : vector with 1,0
   y2 = 1-y
