@@ -1,1 +1,11 @@
-None
+##Multi-class classification problem
+
+###Model used:
+
+Logistic Regression
+
+Linear SVM
+
+Kernel SVM
+
+Multi-layer Perceptron Networks
