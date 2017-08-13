@@ -17,6 +17,8 @@ nn.test(model, test.data %>% select(-y) %>% as.matrix(),test.data$y)
 prediction = nn.predict(model, test.data %>% select(-y) %>% as.matrix())
 #prediction
 }
+
+# nnet
 if(!TRUE){
   needs(nnet)
   data.wor = data %>%
@@ -28,12 +30,13 @@ if(!TRUE){
   
 }
 
+# deepnet (iterative)-------------------
 if(TRUE){
   needs(deepnet)
   # config ==================
-  cacheSize = 300
+  cacheSize = 1000
   startRow = 1942
-  endRow = 2000
+  endRow = 2077
   
   notebook = data %>%
     select(date, settle, score, y) %>%
@@ -47,15 +50,16 @@ if(TRUE){
     train.data = data.wor[(i - cacheSize + 1):i,] 
     test.data = data.wor[i + 1,]
     
-    model = dbn.dnn.train(train.data %>% select(-y) %>% as.matrix(), train.data$y,
+    model = dbn.dnn.train(train.data %>% select(-y) %>% as.matrix(), y.matrix(train.data$y),
                           hidden = c(10,10,10), numepochs = 30, batchsize = 20)
     
     prediction = nn.predict(model, test.data %>% select(-y) %>% as.matrix()) %>% 
-      as.numeric() %>%
-      `[`(1)
+      as.numeric() 
     
-    if(prediction > 0.5){
+    if(prediction[1] == max(prediction)){
       notebook[i, "y.predict"] = 1
+    } else if(prediction[3] == max(prediction)){
+      notebook[i, "y.predict"] = -1
     } else {
       notebook[i, "y.predict"] = 0
     }
@@ -66,4 +70,24 @@ if(TRUE){
   beepr::beep()
 }
 sum(notebook$y == notebook$y.predict) / nrow(notebook)
-# nnet --------------------------------
+
+# deepnet (one time, train yield)
+if(!TRUE){
+  needs(deepnet)
+  # config ==================
+  cacheSize = 1900
+  startRow = 1942
+  endRow = 2077
+  
+  train.data = data.wor[(startRow - cacheSize + 1):startRow,] 
+  test.data = data.wor[startRow+ 1:endRow,]
+  
+  
+  model = dbn.dnn.train(train.data %>% select(-y) %>% as.matrix(), y.matrix(train.data$y),
+                        hidden = c(10,10,10), numepochs = 30, batchsize = 20)
+  
+  prediction2 = nn.predict(model, train.data %>% select(-y) %>% as.matrix())
+
+  
+  
+}

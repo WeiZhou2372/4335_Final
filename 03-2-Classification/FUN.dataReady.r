@@ -38,9 +38,17 @@ move.matrix = function(x, naming = "p", start = 1, end = 120, by = 5){
 }
 
 y.matrix = function(y){
-  #input : vector with 1,0
-  y2 = 1-y
-  matrix(c(y,y2), ncol = 2, byrow = F)
+  #input : vector with 1,0,-1
+  aa = data.frame(y = y)
+  aa = aa %>%
+    mutate(buy = as.numeric(y==1),
+           hold = as.numeric(y==0),
+           sell = as.numeric(y==-1)) %>%
+    select(buy, hold, sell) %>%
+    as.matrix()
   
+  aa
+  
+
 }
 

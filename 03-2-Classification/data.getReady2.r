@@ -1,6 +1,6 @@
 # config ------------------
 N = 10           #balance number, to balance sentiment score with retweet and favorite
-days.lookInTo = 10     # number of days to predict
+days.lookInTo = 5     # number of days to predict
 
 
 # main -------------------
@@ -29,8 +29,11 @@ a = a %>%
   mutate(y = lead(settle, days.lookInTo) - settle) 
 
 settle_expand = df.matrix(a$settle, naming = "p.roll", 1, 120, 2)
-score_expand = move.matrix(a$score, naming = "s.roll", 1, 60, 1)
+score_expand = rollmean.matrix(a$score, naming = "s.roll", 5, 60, 5)
 
 data = cbind(a, settle_expand, score_expand) %>%
- mutate(y = as.numeric(y >= 0)) %>%
+  mutate(y = y/settle) %>%
+  rowwise() %>%
+  filter(!is.na(y)) %>%
+  mutate(y = if(y <= -0.01){-1} else if(y>= 0.01){1} else {0}) %>%
   na.omit()
