@@ -1,6 +1,7 @@
 # config ------------------
 N = 10           #balance number, to balance sentiment score with retweet and favorite
 days.lookInTo = 5     # number of days to predict
+num_y_class = 2
 
 
 # main -------------------
@@ -34,6 +35,15 @@ score_expand = rollmean.matrix(a$score, naming = "s.roll", 5, 60, 5)
 data = cbind(a, settle_expand, score_expand) %>%
   mutate(y = y/settle) %>%
   rowwise() %>%
-  filter(!is.na(y)) %>%
-  mutate(y = if(y <= -0.01){-1} else if(y>= 0.01){1} else {0}) %>%
+  filter(!is.na(y)) 
+
+if(num_y_class == 2){
+  data = data %>%
+    mutate(y = as.numeric(y>= 0))
+} else if(num_y_class == 3){
+  data = data %>%
+    mutate(y = if(y <= -0.01){-1} else if(y>= 0.01){1} else {0})
+}
+
+data = data %>%
   na.omit()
